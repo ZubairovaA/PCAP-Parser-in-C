@@ -110,21 +110,22 @@ int main()
             Unfinished_Sessions = Unfinished(Sessions);
             Unstarnadt_Sessions = Unstandart_Finished(Sessions);
             
-            cout << "The .pcap file includes: " << endl;
-            cout << "Handshakes: " << Handshakes_Sucsess << "." << endl;
-            cout << "Unfinished sessions: " << Unfinished_Sessions << "." << endl;
-            cout << "Unstarnadt sessions: " << Unstarnadt_Sessions << "." << endl;
+            printf ("The.pcap file includes: \n");
+            printf("Handshakes: %d.\n", Handshakes_Sucsess);
+            printf("Unfinished sessions: %d.\n", Unfinished_Sessions);
+            printf("Unstarnadt sessions: %d.\n", Unstarnadt_Sessions);
         }  
         else 
         {
-            cout << "There are no handshakes in the .pcap file." << endl;
+            printf ("There are no handshakes in the .pcap file.\n");
         }
         
         err = fclose(ptrFile);
     }
     else {
-        cout << "Mistake";
+        printf ("Mistake\n");
     }
+
 
 
     
