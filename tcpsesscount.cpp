@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void Parse(FILE* ptrFile, Link& ethernet, pcap_pkthdr& ptk_header, Internet_ip& ip, long & pkt_offset, Transport_tcp& TCP, Handshake* Sessions, int & Handshakes_Sucsess, int& index)
+void Parse(FILE* ptrFile, Link& ethernet, pcap_pkthdr& ptk_header, Internet_ip& ip, long & pkt_offset, Transport_tcp& TCP, Handshake* Sessions, int & Handshakes_Sucsess, int& index, int& Array_Size)
 {
     
     while (fseek(ptrFile, pkt_offset, SEEK_SET) == 0)
@@ -54,7 +54,7 @@ void Parse(FILE* ptrFile, Link& ethernet, pcap_pkthdr& ptk_header, Internet_ip& 
                 break;
             }
 
-            Handle_TCP(TCP, Sessions, Handshakes_Sucsess, index);        
+            Handle_TCP(TCP, Sessions, Handshakes_Sucsess, index, Array_Size);
         }
 
         pkt_offset += 16 + ptk_header.caplen;
@@ -99,18 +99,17 @@ int main()
     int Unfinished_Sessions = 0;
     int Unstarnadt_Sessions = 0;
     long pkt_offset = 24;           // the offset
-    int index = 0;
-    Handshake* Sessions = (Handshake*) malloc(1000 * sizeof(Handshake));    // started hanshakes
-    if( Sessions== NULL)
+    int index = 0, Array_Size=1000;
+    Handshake* Sessions = (Handshake*)malloc(Array_Size * sizeof(Handshake));    // started hanshakes
+    if (Sessions == NULL)
     {
         exit(-1);
     }
-
     err = fopen_s(&ptrFile, fname, "rb");
 
     if (err == 0)
     {
-        Parse(ptrFile, ethernet, ptk_header, ip, pkt_offset, TCP, Sessions, Handshakes_Sucsess, index);
+        Parse(ptrFile, ethernet, ptk_header, ip, pkt_offset, TCP, Sessions, Handshakes_Sucsess, index, Array_Size);
         if (index > 0)      
         {
             Unfinished_Sessions = Unfinished(Sessions, index);
@@ -126,6 +125,7 @@ int main()
             printf ("There are no handshakes in the .pcap file.\n");
          
         }
+        
         
         free(Sessions);
         err = fclose(ptrFile);
@@ -150,13 +150,3 @@ int main()
     return 0;
 }
 
-// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
-// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
-
-// Советы по началу работы 
-//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
-//   2. В окне Team Explorer можно подключиться к системе управления версиями.
-//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
-//   4. В окне "Список ошибок" можно просматривать ошибки.
-//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
-//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
