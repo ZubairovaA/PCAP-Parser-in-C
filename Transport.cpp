@@ -10,7 +10,17 @@ static void Search_Sessions (Transport_tcp &TCP, Handshake* Sessions, int& Hands
 {
 	if(ntohl(TH_SYN) == 1 && ntohl(TH_ACK) == 0)       //the first step of the handshake
     {
+        
         Sessions[index]={ TCP.src_port, TCP.dst_port, TCP.th_seq, 1 };
+        index++;
+        if (index >= 1000) {
+            Sessions = (Handshake*)realloc(Sessions, (index*2) * sizeof(Handshake));
+            if (Sessions==NULL)
+            {
+                printf("Error: can't reallocate memory");
+                exit(2);
+            }
+        }
     }
 
     else if (ntohl(TH_SYN) == 1 && ntohl(TH_ACK) == 1)   // the second step of the handshake
