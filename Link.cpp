@@ -17,6 +17,10 @@ static bool Check_IP_Protocol(Link& ethernet, FILE* ptrFile) {
     {
         return true;
     }
+     else
+    {
+        return false;
+    }
 }
 
 bool Handle_Ethernet(Link& ethernet, FILE* ptrFile) {
