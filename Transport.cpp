@@ -6,16 +6,16 @@
 
 using namespace std;
 
-static void Search_Sessions (Transport_tcp &TCP, vector <Handshake>& Sessions, int& Handshakes_Sucsess)
+static void Search_Sessions (Transport_tcp &TCP, Handshake* Sessions, int& Handshakes_Sucsess, int& index)
 {
 	if(ntohl(TH_SYN) == 1 && ntohl(TH_ACK) == 0)       //the first step of the handshake
     {
-        Sessions.push_back(Handshake{ TCP.src_port, TCP.dst_port, TCP.th_seq, 1 });
+        Sessions[index]={ TCP.src_port, TCP.dst_port, TCP.th_seq, 1 };
     }
 
     else if (ntohl(TH_SYN) == 1 && ntohl(TH_ACK) == 1)   // the second step of the handshake
     {
-     for (int i = 0; i < sizeof(Sessions); i++)
+     for (int i = 0; i < index; i++)
       {
         if ((Sessions[i].dst_port == TCP.src_port) && (Sessions[i].src_port == TCP.dst_port) && (ntohl(TCP.th_ack) == (Sessions[i].sequence_number+1)))
            {
@@ -29,7 +29,7 @@ static void Search_Sessions (Transport_tcp &TCP, vector <Handshake>& Sessions, i
 
     else if (ntohl(TH_SYN) == 0 && ntohl(TH_ACK) == 1)  //the third step of the handshake
      {
-       for (int i = 0; i < sizeof(Sessions); i++)
+       for (int i = 0; i < index; i++)
           {
             if ((Sessions[i].dst_port == TCP.dst_port) && (Sessions[i].src_port == TCP.src_port) && (ntohl(TCP.th_seq) == Sessions[i].sequence_number) && (ntohl(TCP.th_ack) == Sessions[i].Ack_number+1))
               {
@@ -43,7 +43,7 @@ static void Search_Sessions (Transport_tcp &TCP, vector <Handshake>& Sessions, i
 
      else if (ntohl(TH_FIN) == 1 && ntohl(TH_ACK) == 0)   // finish the session 
     {
-         for (int i = 0; i < sizeof(Sessions); i++)
+         for (int i = 0; i < index; i++)
          {
             if ((Sessions[i].dst_port == TCP.dst_port) && (Sessions[i].src_port == TCP.src_port))
              {
@@ -61,8 +61,7 @@ static void Search_Sessions (Transport_tcp &TCP, vector <Handshake>& Sessions, i
 }
 
 
-
-void Handle_TCP(Transport_tcp& TCP, vector <Handshake>& Sessions, int& Handshakes_Sucsess)
+void Handle_TCP(Transport_tcp& TCP, Handshake* Sessions, int& Handshakes_Sucsess, int& index)
 {
-    Search_Sessions(TCP, Sessions, Handshakes_Sucsess);
+    Search_Sessions(TCP, Sessions, Handshakes_Sucsess, index);
 }
