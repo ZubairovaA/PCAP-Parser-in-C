@@ -6,14 +6,14 @@
 
 using namespace std;
 
-struct Transport_tcp {           //ñòðóêòóðà çàãîëîâêà TCP    TCP  header struct
+struct Transport_tcp {           //структура заголовка TCP    TCP  header struct
 
-    unsigned short src_port;	// íîìåð ïîðòà îòïðàâèòåëÿ                 source port
-    unsigned short dst_port;	// íîìåð ïîðòà ïîëó÷àòåëÿ                  destination port
-    unsigned long th_seq;		// íîìåð ïàêåòà â ïîñëåäîâàòåëüíîñòè       sequence number
-    unsigned long th_ack;		// íîìåð ïîäòâåðæäåíèÿ                     acknowledgement number
-    unsigned char th_offx2;	    // äëèíà çàãîëîâêà (4 áèòà) TCP_Length = (tcp->th_offx2) >>4     data offset
-    unsigned char th_flags;     //ôëàãè    flags
+    unsigned short src_port;	// номер порта отправителя                 source port
+    unsigned short dst_port;	// номер порта получателя                  destination port
+    unsigned long th_seq;		// номер пакета в последовательности       sequence number
+    unsigned long th_ack;		// номер подтверждения                     acknowledgement number
+    unsigned char th_offx2;	    // длина заголовка (4 бита) TCP_Length = (tcp->th_offx2) >>4     data offset
+    unsigned char th_flags;     //флаги    flags
 #define TH_FIN 0x01
 #define TH_SYN 0x02
 #define TH_RST 0x04
@@ -23,9 +23,9 @@ struct Transport_tcp {           //ñòðóêòóðà çàãîëîâêà TCP    
 #define TH_ECE 0x40
 #define TH_CWR 0x80
 #define TH_FLAGS (TH_FIN|TH_SYN|TH_RST|TH_ACK|TH_URG|TH_ECE|TH_CWR)
-    unsigned short th_win;		//îêíî                      window
-    unsigned short sum;		    //÷åêñóììà                  checksum
-    unsigned short th_urp;		//ýêñòðåííûé óêàçàòåëü      urgent pointer  
+    unsigned short th_win;		//окно                      window
+    unsigned short sum;		    //чексумма                  checksum
+    unsigned short th_urp;		//экстренный указатель      urgent pointer  
 };
 
 
@@ -38,4 +38,4 @@ struct Handshake {
     unsigned long Ack_number = 0;
 };
 
-void Handle_TCP(Transport_tcp& TCP, vector <Handshake>& Sessions, int& Handshakes_Sucsess);   //Checking if there are any handshakes in the file
+void Handle_TCP(Transport_tcp& TCP, Handshake* Sessions, int& Handshakes_Sucsess, int & index);   //Checking if there are any handshakes in the file
