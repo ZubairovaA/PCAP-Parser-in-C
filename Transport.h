@@ -38,4 +38,4 @@ struct Handshake {
     unsigned long Ack_number = 0;
 };
 
-void Handle_TCP(Transport_tcp& TCP, Handshake* Sessions, int& Handshakes_Sucsess, int & index);   //Checking if there are any handshakes in the file
+void Handle_TCP(Transport_tcp& TCP, Handshake* Sessions, int& Handshakes_Sucsess, int & index, int& Array_Size);   //Checking if there are any handshakes in the file
