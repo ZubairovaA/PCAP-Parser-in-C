@@ -4,9 +4,11 @@
 #include <iostream>
 #include<fstream>
 #include <typeinfo>
+#include<stdexcept>
 #include<Winsock2.h>
 #pragma comment(lib, "ws2_32.lib")
 #include <stdio.h>
+#include <malloc.h>
 #include"PCAP_Headers.h"
 #include"Link.h"
 #include"Internet.h"
@@ -97,8 +99,8 @@ int main()
     int Unfinished_Sessions = 0;
     int Unstarnadt_Sessions = 0;
     long pkt_offset = 24;           // the offset
-    Handshake Sessions [500];    // started hanshakes
-    int index = 0;               //index for the array
+    Handshake* Sessions = (Handshake*) malloc(1000 * sizeof(Handshake));    // started hanshakes
+    int index = 0;
 
     err = fopen_s(&ptrFile, fname, "rb");
 
@@ -121,6 +123,7 @@ int main()
          
         }
         
+        free(Sessions);
         err = fclose(ptrFile);
     }
     else 
