@@ -1,14 +1,12 @@
-﻿// tcpsesscount.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
+// tcpsesscount.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 
 
 #include <iostream>
 #include<fstream>
 #include <typeinfo>
-#include<stdexcept>
 #include<Winsock2.h>
 #pragma comment(lib, "ws2_32.lib")
 #include <stdio.h>
-#include <vector>
 #include"PCAP_Headers.h"
 #include"Link.h"
 #include"Internet.h"
@@ -16,8 +14,9 @@
 
 using namespace std;
 
-void Parse(FILE* ptrFile, Link& ethernet, pcap_pkthdr& ptk_header, Internet_ip& ip, long & pkt_offset, Transport_tcp& TCP, vector <Handshake> & Sessions, int & Handshakes_Sucsess)
+void Parse(FILE* ptrFile, Link& ethernet, pcap_pkthdr& ptk_header, Internet_ip& ip, long & pkt_offset, Transport_tcp& TCP, Handshake* Sessions, int & Handshakes_Sucsess, int& index)
 {
+    
     while (fseek(ptrFile, pkt_offset, SEEK_SET) == 0)
     {
         if (fread(&ptk_header, 16, 1, ptrFile) == 0) //read pcap packet header 16 bytes
@@ -53,7 +52,7 @@ void Parse(FILE* ptrFile, Link& ethernet, pcap_pkthdr& ptk_header, Internet_ip& 
                 break;
             }
 
-            Handle_TCP(TCP, Sessions, Handshakes_Sucsess);        
+            Handle_TCP(TCP, Sessions, Handshakes_Sucsess, index);        
         }
 
         pkt_offset += 16 + ptk_header.caplen;
@@ -61,10 +60,10 @@ void Parse(FILE* ptrFile, Link& ethernet, pcap_pkthdr& ptk_header, Internet_ip& 
 }
     
 
-    int Unfinished (vector <Handshake>& Sessions)
+    int Unfinished (Handshake* Sessions, int& index)
     {
         int count = 0;
-        for (int i = 0; i < sizeof(Sessions); i++)
+        for (int i = 0; i < index; i++)
         {
             if (Sessions[i].Contact != 3)
             {
@@ -74,10 +73,10 @@ void Parse(FILE* ptrFile, Link& ethernet, pcap_pkthdr& ptk_header, Internet_ip& 
         return count;
     }
 
-    int Unstandart_Finished(vector <Handshake>& Sessions)
+    int Unstandart_Finished(Handshake* Sessions, int& index)
     {
         int count = 0;
-        for (int i = 0; i < sizeof(Sessions); i++)
+        for (int i = 0; i < index; i++)
         {
             if(Sessions[i].Finish!=2)
             count++;
@@ -98,17 +97,18 @@ int main()
     int Unfinished_Sessions = 0;
     int Unstarnadt_Sessions = 0;
     long pkt_offset = 24;           // the offset
-    vector <Handshake> Sessions;    // started hanshakes
+    Handshake Sessions [500];    // started hanshakes
+    int index = 0;               //index for the array
 
     err = fopen_s(&ptrFile, fname, "rb");
 
     if (err == 0)
     {
-        Parse(ptrFile, ethernet, ptk_header, ip, pkt_offset, TCP, Sessions, Handshakes_Sucsess);
-        if (Sessions.size() > 0)      
+        Parse(ptrFile, ethernet, ptk_header, ip, pkt_offset, TCP, Sessions, Handshakes_Sucsess, index);
+        if (index > 0)      
         {
-            Unfinished_Sessions = Unfinished(Sessions);
-            Unstarnadt_Sessions = Unstandart_Finished(Sessions);
+            Unfinished_Sessions = Unfinished(Sessions, index);
+            Unstarnadt_Sessions = Unstandart_Finished(Sessions, index);
             
             printf ("The.pcap file includes: \n");
             printf("Handshakes: %d.\n", Handshakes_Sucsess);
@@ -118,14 +118,15 @@ int main()
         else 
         {
             printf ("There are no handshakes in the .pcap file.\n");
+         
         }
         
         err = fclose(ptrFile);
     }
-    else {
+    else 
+    {
         printf ("Mistake\n");
     }
-
 
 
     
