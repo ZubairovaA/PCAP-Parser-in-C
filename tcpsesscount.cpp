@@ -99,8 +99,12 @@ int main()
     int Unfinished_Sessions = 0;
     int Unstarnadt_Sessions = 0;
     long pkt_offset = 24;           // the offset
-    Handshake* Sessions = (Handshake*) malloc(1000 * sizeof(Handshake));    // started hanshakes
     int index = 0;
+    Handshake* Sessions = (Handshake*) malloc(1000 * sizeof(Handshake));    // started hanshakes
+    if( Sessions== NULL)
+    {
+        exit(-1);
+    }
 
     err = fopen_s(&ptrFile, fname, "rb");
 
